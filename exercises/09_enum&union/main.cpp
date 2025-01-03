@@ -33,11 +33,11 @@ ColorEnum convert_by_pun(Color c) {
     union TypePun {
         ColorEnum e;
         Color c;
-    };
+    };                      // 定义一个联合体，两个成员放在同一内存位置，通过赋值给一个成员，可以用另一个成员访问，完成类型双关转换(Type punning)
 
     TypePun pun;
     // TODO: 补全类型双关转换
-
+    pun.c = c;
     return pun.e;
 }
 
