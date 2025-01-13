@@ -1,24 +1,25 @@
 #include "../exercise.h"
 
-// C++ 中，`class` 和 `struct` 之间的**唯一区别**是
-// `class` 默认访问控制符是 `private`，
-// `struct` 默认访问控制符是 `public`。
-// READ: 访问说明符 <https://zh.cppreference.com/w/cpp/language/access>
-
-// 这个 class 中的字段被 private 修饰，只能在 class 内部访问。
-// 因此必须提供构造器来初始化字段。
-// READ: 构造器 <https://zh.cppreference.com/w/cpp/language/constructor>
+// 斐波那契类
 class Fibonacci {
-    size_t cache[16];
-    int cached;
+    size_t cache[16]; // 存储前16个斐波那契数
+    int cached; // 已缓存的数的个数
 
 public:
-    // TODO: 实现构造器
-    // Fibonacci()
+    // 构造器，初始化前两个斐波那契数
+    Fibonacci() : cached(2) {
+        cache[0] = 0;
+        cache[1] = 1;
+    }
 
-    // TODO: 实现正确的缓存优化斐波那契计算
+    // 获取第 i 个斐波那契数，进行缓存优化
     size_t get(int i) {
-        for (; false; ++cached) {
+        // 如果请求的索引小于已缓存的范围，直接返回缓存值
+        if (i < cached) {
+            return cache[i];
+        }
+        // 否则，计算并缓存新的斐波那契数
+        for (; cached <= i; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
         }
         return cache[i];
@@ -26,8 +27,6 @@ public:
 };
 
 int main(int argc, char **argv) {
-    // 现在类型拥有无参构造器，声明时会直接调用。
-    // 这个写法不再是未定义行为了。
     Fibonacci fib;
     ASSERT(fib.get(10) == 55, "fibonacci(10) should be 55");
     std::cout << "fibonacci(10) = " << fib.get(10) << std::endl;
