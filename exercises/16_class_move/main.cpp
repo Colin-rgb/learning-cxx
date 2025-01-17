@@ -21,11 +21,26 @@ public:
     }
 
     // TODO: 实现移动构造器
-    DynFibonacci(DynFibonacci &&) noexcept = delete;
+    //DynFibonacci(DynFibonacci &&) noexcept = delete;
+    DynFibonacci(DynFibonacci &&other): cache(other.cache), cached(other.cached) {
+        other.cache = nullptr;
+        other.cached = 0;
+    }
 
     // TODO: 实现移动赋值
     // NOTICE: ⚠ 注意移动到自身问题 ⚠
-    DynFibonacci &operator=(DynFibonacci &&) noexcept = delete;
+    //DynFibonacci &operator=(DynFibonacci &&) noexcept = delete;
+    DynFibonacci &operator=(DynFibonacci &&other_get)
+    {
+        if (this != &other_get) {
+            delete[] cache;
+            cache = other_get.cache;
+            cached = other_get.cached;
+            other_get.cache = nullptr;
+            other_get.cached = 0;
+        }
+        return *this;
+    }
 
     // TODO: 实现析构器，释放缓存空间
     ~DynFibonacci(){
