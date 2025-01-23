@@ -79,10 +79,13 @@ struct Tensor4D {
     //         {
     //             if (flag_idx[j] == 1)
     //             {
-    //                 shape_idx[j] = 1;
+    //                 shape_idx[j] = 0;
     //             }
     //         }
-    //         this->data[i] += others.data[(shape_idx[0] + 1) * (shape_idx[1] + 1) * (shape_idx[2] + 1) * (shape_idx[3] + 1) - 1 ];
+    //         this->data[i] += others.data[shape_idx[0] * others.shape[1] * others.shape[2] * others.shape[3] +
+    //                                     shape_idx[1] * others.shape[2] * others.shape[3] +
+    //                                     shape_idx[2] * others.shape[3] +
+    //                                     shape_idx[3]];
 
     
     //     }
