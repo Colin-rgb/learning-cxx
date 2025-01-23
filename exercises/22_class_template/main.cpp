@@ -1,4 +1,5 @@
 ﻿#include "../exercise.h"
+#include <cstring>
 
 // READ: 类模板 <https://zh.cppreference.com/w/cpp/language/class_template>
 
@@ -10,6 +11,11 @@ struct Tensor4D {
     Tensor4D(unsigned int const shape_[4], T const *data_) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
+        for (int i = 0; i < 4; i++)
+        {
+            shape[i] = shape_[i];
+            size *= shape[i];
+        }
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
     }
@@ -26,11 +32,109 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
+    // Tensor4D &operator+=(Tensor4D const &others) {
+    //     unsigned int flag_idx[4] = {0};
+    //     //找出需要广播的维度
+    //     for (int m = 0; m < 4; m++)
+    //     {
+    //         if (this->shape[m] != others.shape[m] && (others.shape[m] == 1))
+    //         {
+    //             flag_idx[m] = 1;
+    //         }
+    //     }
+    //     // 确保维度数相同或者可以广播
+    //     if (this->shape[0] != others.shape[0] && others.shape[0] != 1) {
+    //         throw std::invalid_argument("Dimensions are not compatible for broadcasting.");
+    //     }
+    //     if (this->shape[1] != others.shape[1] && others.shape[1] != 1) {
+    //         throw std::invalid_argument("Dimensions are not compatible for broadcasting.");
+    //     }
+    //     if (this->shape[2] != others.shape[2] && others.shape[2] != 1) {
+    //         throw std::invalid_argument("Dimensions are not compatible for broadcasting.");
+    //     }
+    //     if (this->shape[3] != others.shape[3] && others.shape[3] != 1) {
+    //         throw std::invalid_argument("Dimensions are not compatible for broadcasting.");
+    //     }
+
+    //     // 计算实际的大小
+    //     unsigned int size = 1;
+    //     for (int i = 0; i < 4; i++) {
+    //         size *= this->shape[i];
+    //     }
+
+    //     // 进行广播加法操作
+    //     for (unsigned int i = 0; i < size; i++) {
+    //         // 在广播的维度上进行相应的索引映射
+    //         unsigned int idx = i;
+    //         unsigned int shape_idx[4] = {0};
+            
+    //         // 计算此位置在各维度的索引
+    //         for (int dim = 3; dim >= 0; dim--) {
+    //             shape_idx[dim] = idx % this->shape[dim];
+    //             idx /= this->shape[dim];
+    //         }
+
+    //         // 在广播的维度上进行相应的索引映射
+    //         for (int j = 0; j < 4; j++)
+    //         {
+    //             if (flag_idx[j] == 1)
+    //             {
+    //                 shape_idx[j] = 1;
+    //             }
+    //         }
+    //         this->data[i] += others.data[(shape_idx[0] + 1) * (shape_idx[1] + 1) * (shape_idx[2] + 1) * (shape_idx[3] + 1) - 1 ];
+
+    
+    //     }
+    //     return *this;
+    // }
+
+
     Tensor4D &operator+=(Tensor4D const &others) {
-        // TODO: 实现单向广播的加法
+    // Validate broadcasting compatibility
+        for (int m = 0; m < 4; m++) {
+            if (this->shape[m] != others.shape[m] && others.shape[m] != 1) {
+                throw std::invalid_argument("Dimensions are not compatible for broadcasting.");
+            }
+        }
+
+        // Calculate total size
+        unsigned int size = 1;
+        for (int i = 0; i < 4; i++) {
+            size *= this->shape[i];
+        }
+
+        // Perform broadcasting addition
+        for (unsigned int i = 0; i < size; i++) {
+            // Calculate indices for current tensor
+            unsigned int idx = i;
+            unsigned int shape_idx[4] = {0};
+            
+            for (int dim = 3; dim >= 0; dim--) {
+                shape_idx[dim] = idx % this->shape[dim];
+                idx /= this->shape[dim];
+            }
+
+            // Calculate corresponding indices for others tensor
+            unsigned int others_idx[4];
+            for (int dim = 0; dim < 4; dim++) {
+                others_idx[dim] = (others.shape[dim] == 1) ? 0 : shape_idx[dim];
+            }
+
+            // Calculate linear index for others tensor
+            unsigned int others_linear_idx = 
+                others_idx[0] * others.shape[1] * others.shape[2] * others.shape[3] +
+                others_idx[1] * others.shape[2] * others.shape[3] +
+                others_idx[2] * others.shape[3] +
+                others_idx[3];
+
+            // Perform addition
+            this->data[i] += others.data[others_linear_idx];
+        }
         return *this;
     }
 };
+
 
 // ---- 不要修改以下代码 ----
 int main(int argc, char **argv) {
