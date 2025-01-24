@@ -19,7 +19,7 @@ std::vector<udim> strides(std::vector<udim> const &shape) {
     // // READ: 逆向迭代器 std::vector::rbegin <https://zh.cppreference.com/w/cpp/container/vector/rbegin>
     // //       使用逆向迭代器可能可以简化代码
     // return strides;
-        std::vector<udim> strides(shape.size());
+    std::vector<udim> strides(shape.size());
     udim stride = 1;  // 最后一个维度的步长为 1
     for (int i = shape.size() - 1; i >= 0; --i) {
         strides[i] = stride;
