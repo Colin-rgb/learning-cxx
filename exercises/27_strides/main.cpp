@@ -14,10 +14,17 @@ using udim = unsigned int;
 /// @param shape 张量的形状
 /// @return 张量每维度的访问步长
 std::vector<udim> strides(std::vector<udim> const &shape) {
-    std::vector<udim> strides(shape.size());
-    // TODO: 完成函数体，根据张量形状计算张量连续存储时的步长。
-    // READ: 逆向迭代器 std::vector::rbegin <https://zh.cppreference.com/w/cpp/container/vector/rbegin>
-    //       使用逆向迭代器可能可以简化代码
+    // std::vector<udim> strides(shape.size());
+    // // TODO: 完成函数体，根据张量形状计算张量连续存储时的步长。
+    // // READ: 逆向迭代器 std::vector::rbegin <https://zh.cppreference.com/w/cpp/container/vector/rbegin>
+    // //       使用逆向迭代器可能可以简化代码
+    // return strides;
+        std::vector<udim> strides(shape.size());
+    udim stride = 1;  // 最后一个维度的步长为 1
+    for (int i = shape.size() - 1; i >= 0; --i) {
+        strides[i] = stride;
+        stride *= shape[i];  // 更新步长
+    }
     return strides;
 }
 
@@ -29,3 +36,5 @@ int main(int argc, char **argv) {
     ASSERT((strides({7, 1, 1, 1, 5}) == std::vector<udim>{5, 5, 5, 5, 1}), "Make this assertion pass.");
     return 0;
 }
+
+
